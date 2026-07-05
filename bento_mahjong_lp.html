@@ -413,8 +413,9 @@ footer .hash{color:#ffe9a8;font-weight:800}
   </div>
 </footer>
 
-<div class="toast" id="toast">ツモ！🀄</div>
+<div class="toast" id="toast">アガリ！🀄</div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ================= データ ================= */
 const YAKU = [
@@ -440,9 +441,15 @@ const PREFIX = ["東家の","南家の","西家の","北家の","早起きの","
 const SUFFIX = ["とうちゃん","かあちゃん","雀士","ビギナー","三色使い","茶一色マスター","リーチマン","タンヤオ職人","おかず親方","詰め師","パパ","名人"];
 const AVATARS = ["🍙","🍱","🥦","🍅","🍳","🌭","🍤","🥟","🍗","🥕","🧑‍🍳","🀄"];
 
+/* ================= Supabase ================= */
+const SB_URL = "https://arhdomdthjwcydjomfzh.supabase.co";
+const SB_KEY = "sb_publishable_9F40-nEtPqOLrmnTRWeNvQ_4V6fzimV";
+let sb = null;
+try { sb = window.supabase.createClient(SB_URL, SB_KEY); } catch(e) { console.warn("supabase init failed", e); }
+
 /* ================= 状態 ================= */
 let state = { yaku:new Set(), dora:0, aka:0, photo:null };
-let posts = [
+const SAMPLES = [
   {name:"tashional", avatar:"🀄", time:"6月11日 7:27 ・ Facebook #弁当麻雀", emoji:["🐟","🥬","🍅","🍘","🍚","🍤"],
    yaku:["リーチ","ツモ","タンヤオ","ピンフ（のり弁）","三色"], yakuman:0, han:6, dora:0, aka:0, status:"tsumo",
    comment:"#塩サバのり弁。塩サバの茶、小松菜の緑、ミニトマトの赤。のり弁ピンフにメンタンピン三色が乗って跳満。", reacts:{ron:50, uma:2, wakaru:1}},
@@ -468,6 +475,30 @@ let posts = [
    yaku:["国士無双（大好物オンリー）"], yakuman:1, han:0, dora:0, aka:0, status:"tsumo",
    comment:"娘の大好物だけを十三面待ちで揃えた。開けた瞬間の「全部好きなやつ！」がロン。", reacts:{ron:150, uma:88, wakaru:64}}
 ];
+let posts = [...SAMPLES];
+
+function fmtTime(iso){
+  const d = new Date(iso), diff = (Date.now() - d.getTime()) / 60000;
+  if(diff < 1) return "たった今";
+  if(diff < 60) return Math.floor(diff) + "分前";
+  if(diff < 1440) return Math.floor(diff/60) + "時間前";
+  return (d.getMonth()+1) + "月" + d.getDate() + "日";
+}
+async function loadRemote(){
+  if(!sb) return;
+  try{
+    const {data, error} = await sb.from("posts").select("*").order("created_at",{ascending:false}).limit(60);
+    if(error) throw error;
+    const remote = (data||[]).map(r=>({
+      db:true, id:r.id, name:r.name, avatar:r.avatar, time:fmtTime(r.created_at),
+      photo:r.photo_url || null, emoji:r.emoji || null,
+      yaku:Array.isArray(r.yaku) ? r.yaku : [], han:r.han, yakuman:r.yakuman,
+      status:r.status, comment:r.comment || "", reacts:r.reacts || {ron:0,uma:0,wakaru:0}
+    }));
+    posts = [...remote, ...SAMPLES];
+    renderFeed();
+  }catch(e){ console.warn("load failed", e); }
+}
 
 /* ================= 採点 ================= */
 function calcScore(yakuIds, dora, aka, orig){
@@ -538,8 +569,16 @@ function loadPhoto(f){
   if(!f || !f.type || !f.type.startsWith("image/")){ if(f) showToast("画像ファイルをドロップしてください"); return; }
   const r = new FileReader();
   r.onload = ev=>{
-    state.photo = ev.target.result;
-    $("photoDrop").innerHTML = `<img src="${state.photo}" alt="弁当写真"><p>タップ or ドロップで変更</p>`;
+    const im = new Image();
+    im.onload = ()=>{
+      const scale = Math.min(1, 1000/Math.max(im.width, im.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(im.width*scale); c.height = Math.round(im.height*scale);
+      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      state.photo = c.toDataURL("image/jpeg", 0.82);
+      $("photoDrop").innerHTML = `<img src="${state.photo}" alt="弁当写真"><p>タップ or ドロップで変更</p>`;
+    };
+    im.src = ev.target.result;
   };
   r.readAsDataURL(f);
 }
@@ -581,25 +620,49 @@ function randomBento(){
 }
 
 /* 投稿 */
-$("submitBtn").addEventListener("click", ()=>{
+$("submitBtn").addEventListener("click", async ()=>{
   const names = selectedYakuNames();
   if(names.length===0){ showToast("役をひとつ選んでください🀄"); return; }
   const s = calcScore(state.yaku, state.dora, state.aka, $("origYaku").value.trim());
   const done = $("kanshoku").checked;
-  posts.unshift({
-    name: $("penName").value.trim() || randomName(),
+  const ymCount = YAKU.filter(y=>state.yaku.has(y.id)&&y.yakuman).length;
+  const rec = {
+    name: ($("penName").value.trim() || randomName()).slice(0,30),
     avatar: AVATARS[Math.floor(Math.random()*AVATARS.length)],
-    time: "たった今",
-    photo: state.photo,
-    emoji: state.photo ? null : randomBento(),
-    yaku: names, yakumanScore: s,
+    yaku: names, han: ymCount>0 ? 0 : s.han, yakuman: ymCount,
     status: done ? "tsumo" : "tenpai",
-    comment: $("comment").value.trim(),
-    reacts:{ron:0, uma:0, wakaru:0},
-    _score: s
-  });
+    comment: $("comment").value.trim().slice(0,200),
+    emoji: state.photo ? null : randomBento(),
+    photo_url: null
+  };
+  const btn = $("submitBtn");
+  btn.disabled = true; btn.textContent = "投稿中…";
+  let saved = false;
+  if(sb){
+    try{
+      if(state.photo){
+        const blob = await (await fetch(state.photo)).blob();
+        const path = Date.now() + "-" + Math.random().toString(36).slice(2) + ".jpg";
+        const up = await sb.storage.from("bento-photos").upload(path, blob, {contentType:"image/jpeg"});
+        if(up.error) throw up.error;
+        rec.photo_url = sb.storage.from("bento-photos").getPublicUrl(path).data.publicUrl;
+      }
+      const {data, error} = await sb.from("posts").insert(rec).select().single();
+      if(error) throw error;
+      posts.unshift({db:true, id:data.id, name:data.name, avatar:data.avatar, time:"たった今",
+        photo:data.photo_url, emoji:data.emoji, yaku:data.yaku, han:data.han, yakuman:data.yakuman,
+        status:data.status, comment:data.comment, reacts:data.reacts});
+      saved = true;
+    }catch(e){ console.warn("post failed", e); }
+  }
+  if(!saved){
+    posts.unshift({...rec, photo:state.photo, time:"たった今", reacts:{ron:0,uma:0,wakaru:0}});
+    showToast("通信エラー：投稿はこの端末にのみ表示されています");
+  }else{
+    showToast(done ? "アガリ！🀄 " + fmt(s.pts) + "点！" : "リーチ！結果をお待ちください🀄");
+  }
+  btn.disabled = false; btn.textContent = "この手でアガる！🀄";
   renderFeed();
-  showToast(done ? "アガリ！🀄 " + fmt(s.pts) + "点！" : "リーチ！結果をお待ちください🀄");
   /* reset light */
   state = { yaku:new Set(), dora:0, aka:0, photo:null };
   document.querySelectorAll(".chip.on").forEach(c=>c.classList.remove("on"));
@@ -641,7 +704,7 @@ function renderFeed(){
     el.className="post";
     el.innerHTML = `
       <div class="post-head">
-        <div class="avatar">${p.avatar}</div>
+        <div class="avatar">${esc(p.avatar)}</div>
         <div class="who"><b>${esc(p.name)}</b><span>${p.time}</span></div>
         <span class="status ${p.status}">${STATUS_LABEL[p.status]}</span>
       </div>
@@ -664,6 +727,7 @@ function renderFeed(){
       p.reacts[b.dataset.r]++;
       b.querySelector(".cnt").textContent = p.reacts[b.dataset.r];
       b.classList.add("done");
+      if(p.db && sb) sb.rpc("add_react", {post_id:p.id, kind:b.dataset.r}).then(()=>{},()=>{});
     });
   });
 }
@@ -696,6 +760,7 @@ function showToast(msg){
 
 updateBoard();
 renderFeed();
+loadRemote();
 </script>
 </body>
 </html>
