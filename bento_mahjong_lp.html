@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>弁当麻雀 — 朝の台所は、雀卓だ。</title>
+<meta name="description" content="#弁当麻雀 — お弁当作りをゲームにする。役を作って、詰めて、空の弁当箱でアガれ。">
+<style>
+:root{
+  --felt:#2e6b4f; --felt-dark:#20503a;
+  --red:#d8503f; --red-dark:#b73c2d;
+  --yellow:#f2b705; --green:#4f8a5b; --brown:#8a5a2b;
+  --cream:#faf6ec; --paper:#fffdf7; --ink:#3a2f28; --ink-light:#7a6a5c;
+  --radius:18px;
+  --shadow:0 4px 18px rgba(58,47,40,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Hiragino Maru Gothic ProN","Zen Maru Gothic","Rounded Mplus 1c","Yu Gothic UI","Meiryo",sans-serif;
+  background:var(--cream); color:var(--ink); line-height:1.7;
+}
+img{max-width:100%}
+.wrap{max-width:680px;margin:0 auto;padding:0 16px}
+
+/* ---------- HERO ---------- */
+.hero{
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,.08), transparent 40%),
+    linear-gradient(160deg,var(--felt),var(--felt-dark));
+  color:#fff; padding:56px 0 46px; text-align:center; position:relative; overflow:hidden;
+}
+.hero .tiles{font-size:34px;letter-spacing:6px;opacity:.95}
+.hero h1{font-size:52px;letter-spacing:.06em;margin:8px 0 4px;text-shadow:0 3px 0 rgba(0,0,0,.25)}
+.hero .tag{font-size:20px;font-weight:700;color:#ffe9a8;margin-bottom:14px}
+.hero p.lead{max-width:560px;margin:0 auto 22px;font-size:15px;opacity:.95}
+.hero .hash{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:4px 16px;font-weight:700;margin-bottom:22px}
+.hero-art{max-width:360px;margin:6px auto 20px}
+.hero-photo-wrap{position:relative;max-width:360px;margin:0 auto;border-radius:20px;overflow:hidden;border:4px solid #ffe9a8;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.hero-photo-wrap img{display:block;width:100%;height:auto}
+.yakuman-badge{position:absolute;right:10px;bottom:10px;background:#fffdf7;color:#d8503f;font-weight:900;font-size:15px;padding:6px 10px;border-radius:8px;border:2px solid #d8cbb0;transform:rotate(6deg);letter-spacing:.2em}
+.spark{position:absolute;color:#ffe9a8;text-shadow:0 0 8px rgba(255,233,168,.9);font-size:22px;animation:tw 1.8s infinite;pointer-events:none}
+.spark.s1{top:8px;left:10px}.spark.s2{top:18px;right:14px;animation-delay:.5s}.spark.s3{bottom:16px;left:18px;animation-delay:1s;font-size:16px}
+@keyframes tw{0%,100%{opacity:.4;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
+.hero-art svg{width:100%;height:auto;display:block;filter:drop-shadow(0 6px 16px rgba(0,0,0,.28))}
+.hero-art-cap{margin-top:8px;font-weight:900;font-size:18px;letter-spacing:.12em;color:#ffe9a8}
+.hero-art-cap span{display:block;font-weight:600;font-size:12px;letter-spacing:.04em;color:#fff;opacity:.85;margin-top:2px}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{
+  display:inline-block;border:none;cursor:pointer;font-family:inherit;
+  border-radius:999px;padding:13px 28px;font-size:16px;font-weight:800;
+  transition:transform .12s, box-shadow .12s; text-decoration:none;
+}
+.btn:active{transform:scale(.97)}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 4px 0 var(--red-dark)}
+.btn-red:hover{transform:translateY(-2px)}
+.btn-ghost{background:rgba(255,255,255,.12);color:#fff;border:2px solid rgba(255,255,255,.6)}
+
+/* ---------- STEPS ---------- */
+.steps{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:-26px auto 0;position:relative;z-index:2;max-width:680px;padding:0 16px}
+.step{
+  flex:1;min-width:150px;background:var(--paper);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:16px 14px;text-align:center;border-top:4px solid var(--yellow)
+}
+.step:nth-child(2){border-top-color:var(--red)}
+.step:nth-child(3){border-top-color:var(--green)}
+.step .ico{font-size:28px}
+.step b{display:block;font-size:15px;margin-top:2px}
+.step span{font-size:12px;color:var(--ink-light)}
+
+section{padding:44px 0}
+h2.sec{
+  text-align:center;font-size:26px;letter-spacing:.08em;margin-bottom:6px;
+}
+h2.sec::after{content:"";display:block;width:56px;height:4px;border-radius:2px;background:var(--red);margin:10px auto 0}
+p.sec-sub{text-align:center;color:var(--ink-light);font-size:14px;margin-bottom:26px}
+
+/* ---------- FORM ---------- */
+.card{background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px}
+.field{margin-bottom:20px}
+.field>label{display:block;font-weight:800;font-size:14px;margin-bottom:8px}
+.field>label small{font-weight:400;color:var(--ink-light);margin-left:6px}
+.name-row{display:flex;gap:8px}
+.name-row input{flex:1}
+input[type=text],textarea{
+  width:100%;font-family:inherit;font-size:15px;padding:11px 14px;
+  border:2px solid #e8dfd0;border-radius:12px;background:#fff;color:var(--ink)
+}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--green)}
+.dice{
+  border:2px solid #e8dfd0;background:#fff;border-radius:12px;font-size:20px;
+  width:48px;cursor:pointer;transition:transform .2s
+}
+.dice:hover{transform:rotate(20deg)}
+.photo-drop{
+  border:2px dashed #d8cbb6;border-radius:14px;background:#fff;
+  padding:22px;text-align:center;cursor:pointer;transition:border-color .15s
+}
+.photo-drop:hover{border-color:var(--red)}
+.photo-drop.drag{border-color:var(--red);background:#fff4ee;transform:scale(1.01)}
+.photo-drop .big{font-size:34px}
+.photo-drop p{font-size:13px;color:var(--ink-light)}
+.photo-drop img{max-height:220px;border-radius:10px;margin-top:8px}
+.photo-note{font-size:12px;color:var(--ink-light);margin-top:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  border:2px solid #e2d7c4;background:#fff;border-radius:999px;padding:7px 14px;
+  font-family:inherit;font-size:13.5px;font-weight:700;color:var(--ink);cursor:pointer;
+  transition:all .12s
+}
+.chip small{color:var(--ink-light);font-weight:600}
+.chip.on{background:var(--felt);border-color:var(--felt);color:#fff}
+.chip.on small{color:#cfe8db}
+.chip.yakuman{border-color:#e6b8b0}
+.chip.yakuman.on{background:var(--red);border-color:var(--red)}
+.chip.warn{border-style:dashed}
+.counter-row{display:flex;gap:18px;flex-wrap:wrap}
+.counter{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #e8dfd0;border-radius:999px;padding:6px 10px}
+.counter b{font-size:13.5px}
+.counter button{
+  width:30px;height:30px;border-radius:50%;border:none;background:var(--cream);
+  font-size:16px;font-weight:800;cursor:pointer;color:var(--ink)
+}
+.counter button:hover{background:#efe5d2}
+.counter .num{min-width:22px;text-align:center;font-weight:800;font-size:16px}
+.checkline{display:flex;align-items:center;gap:10px;background:#fff8e6;border:2px solid #f2dfa6;border-radius:12px;padding:12px 14px;cursor:pointer}
+.checkline input{width:20px;height:20px;accent-color:var(--red)}
+.checkline b{font-size:14.5px}
+.checkline small{display:block;color:var(--ink-light);font-size:12px}
+
+.scoreboard{
+  background:linear-gradient(160deg,var(--felt),var(--felt-dark));color:#fff;
+  border-radius:14px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px
+}
+.scoreboard .yaku-line{font-size:13px;opacity:.92;max-width:340px}
+.scoreboard .pts{text-align:right}
+.scoreboard .rank{font-size:14px;color:#ffe9a8;font-weight:800}
+.scoreboard .val{font-size:28px;font-weight:900;letter-spacing:.03em}
+.scoreboard .note{font-size:11px;opacity:.8}
+.submit-row{text-align:center;margin-top:20px}
+.btn-submit{font-size:18px;padding:15px 42px}
+
+/* ---------- FEED ---------- */
+.post{background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 18px 14px;margin-bottom:18px;animation:pop .35s ease}
+@keyframes pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.post-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid #eadfca}
+.post-head .who b{font-size:14.5px;display:block}
+.post-head .who span{font-size:11.5px;color:var(--ink-light)}
+.status{margin-left:auto;font-size:12px;font-weight:800;border-radius:999px;padding:4px 12px}
+.status.tsumo{background:#e8f4ea;color:#2c6e3f}
+.status.ryukyoku{background:#f6e8e6;color:#a8402f}
+.status.tenpai{background:#fdf3d7;color:#8a6d1a}
+.bento{
+  background:linear-gradient(#f7f1e3,#f1e8d4);border:3px solid #c9a86a;border-radius:14px;
+  padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px
+}
+.bento .cell{
+  background:#fffdf7;border-radius:10px;text-align:center;font-size:34px;padding:10px 4px;
+  box-shadow:inset 0 0 0 1px #eee3cd
+}
+.bento-photo{border-radius:14px;border:3px solid #c9a86a;width:100%;object-fit:cover;max-height:340px;margin-bottom:10px}
+.post .yakus{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.ytag{font-size:12px;font-weight:800;background:#eef4ec;color:#33604a;border-radius:999px;padding:3px 11px}
+.ytag.ym{background:#fbe9e6;color:#b73c2d}
+.score-badge{
+  display:inline-block;background:var(--felt);color:#fff;font-weight:900;font-size:14px;
+  border-radius:8px;padding:4px 12px;margin-bottom:8px
+}
+.score-badge.ym{background:var(--red)}
+.score-badge.ry{background:#9c8f80}
+.post .comment{font-size:14.5px;margin-bottom:12px}
+.reacts{display:flex;gap:8px;border-top:1px dashed #e6dcc9;padding-top:10px;flex-wrap:wrap}
+.react{
+  border:1.5px solid #e2d7c4;background:#fff;border-radius:999px;padding:5px 13px;
+  font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink);transition:all .12s
+}
+.react:hover{border-color:var(--red);color:var(--red)}
+.react.done{background:#fbe9e6;border-color:var(--red);color:var(--red)}
+.react .cnt{font-weight:900;margin-left:3px}
+.share-x{margin-left:auto;font-size:12.5px;color:var(--ink-light);text-decoration:none;align-self:center;font-weight:700}
+.share-x:hover{color:var(--ink)}
+
+/* ---------- YAKU LIST ---------- */
+.ygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.ycard{background:var(--paper);border-radius:14px;box-shadow:var(--shadow);padding:14px 16px;border-left:5px solid var(--green)}
+.ycard.ym{border-left-color:var(--red)}
+.ycard.dora{border-left-color:var(--yellow)}
+.ycard h4{font-size:15px;display:flex;justify-content:space-between;align-items:center}
+.ycard h4 .han{font-size:12px;background:var(--cream);border-radius:999px;padding:2px 10px;color:var(--ink-light);white-space:nowrap}
+.ycard.ym h4 .han{background:#fbe9e6;color:#b73c2d}
+.ycard p{font-size:13px;color:var(--ink-light);margin-top:4px}
+.rule-hero{
+  background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:20px 22px;margin-bottom:22px;border:2px solid #f2dfa6;text-align:center
+}
+.rule-hero b{color:var(--red-dark);font-size:16px}
+.rule-hero p{font-size:13.5px;color:var(--ink-light);margin-top:4px}
+
+/* ---------- FOOTER ---------- */
+footer{background:var(--felt-dark);color:#dceee3;padding:38px 0;text-align:center;margin-top:30px}
+footer .fh{font-size:20px;font-weight:900;color:#fff;margin-bottom:8px}
+footer p{font-size:13px;max-width:520px;margin:0 auto 6px;opacity:.9}
+footer .hash{color:#ffe9a8;font-weight:800}
+.toast{
+  position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(80px);
+  background:var(--red);color:#fff;font-weight:900;font-size:18px;border-radius:999px;
+  padding:14px 34px;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transition:all .35s;z-index:50;pointer-events:none
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:520px){
+  .hero h1{font-size:40px}
+  .bento .cell{font-size:26px}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="tiles">🀇🀈🀉 🍱 🀐🀑🀒</div>
+    <h1>弁当麻雀</h1>
+    <div class="tag">朝の台所は、雀卓だ。</div>
+    <div><span class="hash">#弁当麻雀</span></div>
+    <p class="lead">冷蔵庫が山。ご飯を詰めたらリーチ。空っぽで帰ってきた弁当箱がアガリ。<br>
+    映え勢も、茶一色勢も、冷食フル活用の鳴きタン勢も、パパもママも、全員がアガれる。</p>
+
+    <div class="hero-art">
+      <div class="hero-photo-wrap" id="heroPhotoWrap">
+        <img id="heroPhoto" src="hero_bento.jpg" alt="チャーイーソー（茶一色チャーハン弁当）" onerror="document.getElementById('heroPhotoWrap').style.display='none';document.getElementById('heroSvg').style.display='block';">
+        <span class="yakuman-badge">役満</span>
+        <span class="spark s1">✦</span><span class="spark s2">✦</span><span class="spark s3">✦</span>
+      </div>
+      <div id="heroSvg" style="display:none">
+      <svg viewBox="0 0 380 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="チャーイーソー（茶一色弁当）のイラスト">
+        <!-- 後光（映えレイ） -->
+        <g stroke="#ffe9a8" stroke-width="3" opacity=".35" stroke-linecap="round">
+          <line x1="190" y1="125" x2="190" y2="18"/>
+          <line x1="190" y1="125" x2="60" y2="40"/>
+          <line x1="190" y1="125" x2="320" y2="40"/>
+          <line x1="190" y1="125" x2="24" y2="125"/>
+          <line x1="190" y1="125" x2="356" y2="125"/>
+          <line x1="190" y1="125" x2="80" y2="228"/>
+          <line x1="190" y1="125" x2="300" y2="228"/>
+        </g>
+        <circle cx="190" cy="132" r="96" fill="#ffe9a8" opacity=".12"/>
+        <!-- 弁当箱 -->
+        <rect x="70" y="66" width="240" height="140" rx="18" fill="#5c3317"/>
+        <rect x="80" y="76" width="220" height="120" rx="12" fill="#f7ead0"/>
+        <line x1="190" y1="80" x2="190" y2="192" stroke="#e4d3ae" stroke-width="4"/>
+        <!-- 左：チャーハン山＋焼きそば -->
+        <path d="M92 150 Q118 108 146 128 Q168 112 182 140 L182 168 Q136 180 92 168 Z" fill="#e0a33e"/>
+        <g fill="#8a5a2b"><circle cx="112" cy="142" r="3.4"/><circle cx="132" cy="132" r="3.4"/><circle cx="152" cy="140" r="3.4"/><circle cx="166" cy="150" r="3.4"/><circle cx="122" cy="158" r="3.4"/><circle cx="148" cy="160" r="3.4"/></g>
+        <g stroke="#8a4d1f" stroke-width="5" fill="none" stroke-linecap="round">
+          <path d="M94 182 Q120 172 146 182 Q166 190 182 182"/>
+          <path d="M96 190 Q126 182 156 190 Q170 194 180 189"/>
+        </g>
+        <!-- 右：唐揚げ×3＋ナゲット -->
+        <g>
+          <path d="M212 96 q16 -12 30 0 q12 10 2 24 q-14 12 -28 2 q-12 -12 -4 -26" fill="#a05a1f"/>
+          <path d="M252 106 q18 -10 30 4 q8 14 -6 24 q-16 8 -26 -4 q-8 -14 2 -24" fill="#94510e"/>
+          <path d="M222 132 q16 -8 28 4 q10 12 -2 22 q-16 10 -28 -2 q-8 -14 2 -24" fill="#aa6524"/>
+          <ellipse cx="224" cy="104" rx="6" ry="3.4" fill="#d98c3f" transform="rotate(-20 224 104)"/>
+          <ellipse cx="262" cy="114" rx="5.6" ry="3" fill="#d98c3f" transform="rotate(15 262 114)"/>
+          <ellipse cx="234" cy="140" rx="5.6" ry="3" fill="#d98c3f" transform="rotate(-12 234 140)"/>
+          <rect x="256" y="150" width="36" height="24" rx="11" fill="#c98937"/>
+          <rect x="216" y="164" width="34" height="22" rx="10" fill="#d0913c"/>
+          <g fill="#8a5a2b" opacity=".55"><circle cx="266" cy="158" r="1.8"/><circle cx="278" cy="164" r="1.8"/><circle cx="226" cy="172" r="1.8"/><circle cx="238" cy="176" r="1.8"/></g>
+        </g>
+        <!-- 湯気 -->
+        <g stroke="#fff" stroke-width="3" opacity=".55" fill="none" stroke-linecap="round">
+          <path d="M150 58 q6 -10 0 -20"/><path d="M240 52 q-6 -10 0 -20"/>
+        </g>
+        <!-- キラキラ（映え） -->
+        <g fill="#ffe9a8">
+          <path d="M64 60 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 z"/>
+          <path d="M318 70 l3.4 8.6 8.6 3.4 -8.6 3.4 -3.4 8.6 -3.4 -8.6 -8.6 -3.4 8.6 -3.4 z"/>
+          <path d="M300 196 l3 7.4 7.4 3 -7.4 3 -3 7.4 -3 -7.4 -7.4 -3 7.4 -3 z"/>
+          <path d="M76 200 l2.6 6.4 6.4 2.6 -6.4 2.6 -2.6 6.4 -2.6 -6.4 -6.4 -2.6 6.4 -2.6 z"/>
+        </g>
+        <!-- 役満牌 -->
+        <g transform="rotate(8 322 190)">
+          <rect x="300" y="168" width="44" height="58" rx="8" fill="#fffdf7" stroke="#d8cbb0" stroke-width="2"/>
+          <text x="322" y="194" text-anchor="middle" font-size="17" font-weight="bold" fill="#d8503f" font-family="serif">役</text>
+          <text x="322" y="214" text-anchor="middle" font-size="17" font-weight="bold" fill="#d8503f" font-family="serif">満</text>
+        </g>
+      </svg>
+      </div>
+      <div class="hero-art-cap">チャーイーソー（茶一色）<span>茶色は、裏切らない。——役満</span></div>
+    </div>
+
+    <div class="cta-row">
+      <a href="#post" class="btn btn-red">今日の一局を投稿する</a>
+      <a href="bento_yaku_guide.html" class="btn btn-ghost">主な役ガイド</a>
+    </div>
+  </div>
+</header>
+
+<div class="steps">
+  <div class="step"><div class="ico">🥢</div><b>1. 配牌</b><span>冷蔵庫を開けて食材をツモる</span></div>
+  <div class="step"><div class="ico">🍳</div><b>2. 役作り</b><span>焼く・煮る・詰める。ご飯を詰めたらリーチ</span></div>
+  <div class="step"><div class="ico">🍱</div><b>3. アガリ</b><span>空の弁当箱が帰ってきたらツモ！</span></div>
+</div>
+
+<!-- POST FORM -->
+<section id="post">
+  <div class="wrap">
+    <h2 class="sec">今日の一局を投稿</h2>
+    <p class="sec-sub">匿名OK・写真がなくても絵文字弁当でOK。誰の手牌もジャッジしません。</p>
+    <div class="card">
+
+      <div class="field">
+        <label>雀名（匿名でどうぞ）<small>🎲で変更できます</small></label>
+        <div class="name-row">
+          <input type="text" id="penName" maxlength="20">
+          <button class="dice" id="diceBtn" title="別の名前にする">🎲</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>お弁当の写真<small>任意</small></label>
+        <div class="photo-drop" id="photoDrop">
+          <div class="big">📷</div>
+          <p>タップして選ぶ／ここに写真をドラッグ＆ドロップ<br>（なければ絵文字弁当が自動で入ります）</p>
+        </div>
+        <input type="file" id="photoInput" accept="image/*" hidden>
+        <div class="photo-note">※ このデモでは写真は端末内でのみ表示され、どこにも送信されません。</div>
+      </div>
+
+      <div class="field">
+        <label>役を選ぶ<small>タップで宣言。複合OK</small></label>
+        <div class="chips" id="yakuChips"></div>
+      </div>
+
+      <div class="field">
+        <label>ドラ<small>タップで増減</small></label>
+        <div class="counter-row">
+          <div class="counter"><b>ドラ（子の大好物）</b>
+            <button data-c="dora" data-d="-1">−</button><span class="num" id="doraNum">0</span><button data-c="dora" data-d="1">＋</button>
+          </div>
+          <div class="counter"><b>赤ドラ（赤ウィンナー・ミニトマト）</b>
+            <button data-c="aka" data-d="-1">−</button><span class="num" id="akaNum">0</span><button data-c="aka" data-d="1">＋</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>オリジナル役<small>自由に発明してOK・1翻つきます</small></label>
+        <input type="text" id="origYaku" placeholder="例：全帯照焼（おかず全部に照り焼きが絡む）" maxlength="30">
+      </div>
+
+      <div class="field">
+        <label class="checkline">
+          <input type="checkbox" id="kanshoku">
+          <span><b>弁当箱が空で帰ってきた（完食＝アガリ！）</b>
+          <small>未確認の場合は「テンパイ」として投稿されます。結果は後日でOK。</small></span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label>ひとこと<small>任意・120字まで</small></label>
+        <textarea id="comment" rows="2" maxlength="120" placeholder="例：初めてのリーチ。手が震えた。"></textarea>
+      </div>
+
+      <div class="scoreboard">
+        <div class="yaku-line" id="sbYaku">役を選ぶと自動で採点されます</div>
+        <div class="pts">
+          <div class="rank" id="sbRank">—</div>
+          <div class="val" id="sbVal">0点</div>
+          <div class="note">※弁当麻雀では我々は常に親です</div>
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <button class="btn btn-red btn-submit" id="submitBtn">この手でアガる！🀄</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEED -->
+<section id="feed-sec" style="padding-top:10px">
+  <div class="wrap">
+    <h2 class="sec">みんなのアガリ形</h2>
+    <p class="sec-sub">全国の雀士たちの今日の一局。「ロン！」で祝福しよう。</p>
+    <div id="feed"></div>
+  </div>
+</section>
+
+<!-- YAKU LIST -->
+<section id="yaku" style="background:#f3ecdd">
+  <div class="wrap">
+    <h2 class="sec">役一覧</h2>
+    <p class="sec-sub">普通に作るだけで、どんどん複合してインフレします。<br><a href="bento_yaku_guide.html" style="color:var(--red-dark);font-weight:800">▶ 主な役ガイド（詳しい解説ページ）</a></p>
+
+    <div class="rule-hero">
+      <b>最重要ルール：空の弁当箱が「アガリ」</b>
+      <p>残っていたら流局。帰宅後、弁当箱を開ける瞬間の緊張感こそが弁当麻雀の醍醐味です。<br>冷凍食品を使わずにアガれば「ツモ」で一翻追加。</p>
+    </div>
+
+    <div class="ygrid" id="yakuList"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fh">🍱 弁当麻雀は、社会実験です。</div>
+    <p>家事における最重要プロジェクト「朝の弁当作り」。QCDのすべてが問われるこの舞台に、もっと多くの男性が楽しく参画できたら——それがこの遊びの願いです。</p>
+    <p>「俺でも作れるのでは」と思ったあなた、それはもうテンパイです。</p>
+    <p class="hash">#弁当麻雀 で今日の一局をシェアしよう</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast">ツモ！🀄</div>
+
+<script>
+/* ================= データ ================= */
+const YAKU = [
+  {id:"riichi", name:"リーチ", han:1, desc:"ご飯を詰めた瞬間に成立。あとおかず一種でアガれる状態。全員まずここから。"},
+  {id:"pinfu", name:"ピンフ（日の丸・のり弁）", han:1, desc:"白ご飯に梅干しひとつ、またはのり弁。シンプルにして美しい基本形。"},
+  {id:"tanyao", name:"タンヤオ（苦手ゼロ）", han:1, desc:"嫌いなおかずが一つもない弁当。冷凍食品を使ってもOK。鳴きタンで全く問題ない。"},
+  {id:"menzen", name:"ツモ（冷凍食品不使用）", han:1, desc:"門前清自摸和。冷凍食品を使わずに作った手は1翻。ただし冷食使用はまったく問題なし——ツモがつかないだけで、タンヤオも三色もちゃんと複合します。"},
+  {id:"sanshoku", name:"三色（赤・緑・黄）", han:2, desc:"ミニトマト・ブロッコリー・卵焼きで成立。彩りの王道にして弁当麻雀の花形。"},
+  {id:"honitsu", name:"混一色", han:3, desc:"ほぼ一色に寄せた手。茶色系に寄ると育ち盛りに大人気。"},
+  {id:"chinitsu", name:"清一色", han:6, desc:"完全一色。ここまで来ると役満が見えてくる。"},
+  {id:"chaiso", name:"茶一色", han:13, yakuman:true, desc:"唐揚げ・焼きそば・ナゲット・チャーハン。茶色は裏切らない。上がりやすく異常に盛り上がる役満。"},
+  {id:"akaiso", name:"赤一色", han:13, yakuman:true, desc:"ナポリタンを軸に赤で染める役満。情熱の一局。"},
+  {id:"kokushi", name:"国士無双（大好物オンリー）", han:13, yakuman:true, desc:"唐揚げ、ゆで卵、ウィンナー……子どもの大好物だけで構成された弁当。孤高の役満。"},
+  {id:"ryuiso", name:"緑一色 ⚠", han:13, yakuman:true, warn:true, desc:"ブロッコリーとアスパラで敷き詰めると子どもに本気で嫌がられます。役として存在するが実用的ではない。挑戦は自己責任で。"}
+];
+const DORA_DESC = [
+  {name:"ドラ（子の大好物）", han:"1翻/個", desc:"大好物のおかずは1個につき1翻。冷凍エビシューマイ3個でドラ3。", cls:"dora"},
+  {name:"赤ドラ", han:"1翻/個", desc:"赤ウィンナー・ミニトマトなど見た目に赤いものは1個につき1翻追加。", cls:"dora"},
+  {name:"オリジナル役", han:"1翻", desc:"新しい役の発明を歓迎します。名乗った者勝ち。", cls:"dora"}
+];
+
+const PREFIX = ["東家の","南家の","西家の","北家の","早起きの","寝坊した","冷凍庫の","段取りの鬼・","役満狙いの","のり弁の","単騎待ちの","台所の"];
+const SUFFIX = ["とうちゃん","かあちゃん","雀士","ビギナー","三色使い","茶一色マスター","リーチマン","タンヤオ職人","おかず親方","詰め師","パパ","名人"];
+const AVATARS = ["🍙","🍱","🥦","🍅","🍳","🌭","🍤","🥟","🍗","🥕","🧑‍🍳","🀄"];
+
+/* ================= 状態 ================= */
+let state = { yaku:new Set(), dora:0, aka:0, photo:null };
+let posts = [
+  {name:"tashional", avatar:"🀄", time:"6月11日 7:27 ・ Facebook #弁当麻雀", emoji:["🐟","🥬","🍅","🍘","🍚","🍤"],
+   yaku:["リーチ","ツモ","タンヤオ","ピンフ（のり弁）","三色"], yakuman:0, han:6, dora:0, aka:0, status:"tsumo",
+   comment:"#塩サバのり弁。塩サバの茶、小松菜の緑、ミニトマトの赤。のり弁ピンフにメンタンピン三色が乗って跳満。", reacts:{ron:50, uma:2, wakaru:1}},
+  {name:"tashional", avatar:"🍱", time:"4月17日 ・ Facebook #弁当麻雀", emoji:["🥦","🥦","🍳","🍳","🐟","🐟"],
+   yaku:["ツモ","タンヤオ","ピンフ","三色"], yakuman:0, han:5, dora:0, aka:0, status:"tsumo",
+   comment:"#さばそぼろごはん。アスパラの緑、炒り卵の黄、さばそぼろの茶。メンタンピン三色で満貫。", reacts:{ron:53, uma:2, wakaru:1}},
+  {name:"tashional", avatar:"🍙", time:"1月27日 ・ Facebook #弁当麻雀", emoji:["🍗","🍅","🥦","🫑","🍚","🍚"],
+   yaku:["リーチ","ツモ","タンヤオ","ピンフ（日の丸）"], yakuman:0, han:4, dora:0, aka:0, status:"tsumo",
+   comment:"#鶏の甘辛しょうゆ煮。日の丸ご飯でピンフ確定、リーチメンタンピン。ミニトマトの赤ドラは申請し忘れた。", reacts:{ron:64, uma:3, wakaru:2}},
+  {name:"東家のタカシ", avatar:"🍗", time:"2時間前", emoji:["🍗","🍤","🥟","🍚","🍙","🌭"],
+   yaku:["茶一色","ドラ3"], yakuman:1, han:0, dora:3, aka:0, status:"tsumo",
+   comment:"息子の運動会。迷いはなかった。茶色は裏切らない。", reacts:{ron:48, uma:31, wakaru:22}},
+  {name:"はじめての南さん", avatar:"🍙", time:"5時間前", emoji:["🍚","🍚","🍚","🍚","🌶","🍚"],
+   yaku:["リーチ","ピンフ（日の丸）","赤ドラ1"], yakuman:0, han:3, dora:0, aka:1, status:"tsumo",
+   comment:"人生初弁当。日の丸で堂々の3翻。手が震えた。", reacts:{ron:96, uma:12, wakaru:57}},
+  {name:"西家のかあちゃん", avatar:"🥦", time:"昨日", emoji:["🥦","🥬","🥒","🥦","🫑","🥦"],
+   yaku:["緑一色（挑戦）"], yakuman:1, han:0, dora:0, aka:0, status:"ryukyoku",
+   comment:"緑一色に挑んだ結果、娘に本気で拒否されました。役満は幻に。皆はやめておけ。", reacts:{ron:8, uma:3, wakaru:214}},
+  {name:"匿名の北パパ", avatar:"🍳", time:"昨日", emoji:["🍳","🥦","🍅","🌭","🍙","🍤"],
+   yaku:["リーチ","三色","タンヤオ","ドラ2","赤ドラ2"], yakuman:0, han:8, dora:2, aka:2, status:"tenpai",
+   comment:"オーソドックスに組んだだけで倍満。弁当麻雀、インフレしすぎでは？ 帰宅待ち。", reacts:{ron:33, uma:41, wakaru:19}},
+  {name:"国士無双の父", avatar:"🀄", time:"2日前", emoji:["🍗","🥚","🌭","🍤","🍙","🥟"],
+   yaku:["国士無双（大好物オンリー）"], yakuman:1, han:0, dora:0, aka:0, status:"tsumo",
+   comment:"娘の大好物だけを十三面待ちで揃えた。開けた瞬間の「全部好きなやつ！」がロン。", reacts:{ron:150, uma:88, wakaru:64}}
+];
+
+/* ================= 採点 ================= */
+function calcScore(yakuIds, dora, aka, orig){
+  const sel = YAKU.filter(y=>yakuIds.has(y.id));
+  const ymCount = sel.filter(y=>y.yakuman).length;
+  if(ymCount>0){
+    const label = ymCount>=2?"ダブル役満":"役満";
+    return {rank:label, pts:48000*ymCount, han:13*ymCount, ym:true};
+  }
+  let han = sel.reduce((s,y)=>s+y.han,0) + dora + aka + (orig?1:0);
+  if(han<=0) return {rank:"—", pts:0, han:0, ym:false};
+  let rank, pts;
+  if(han>=13){rank="数え役満";pts=48000}
+  else if(han>=11){rank="三倍満";pts=36000}
+  else if(han>=8){rank="倍満";pts=24000}
+  else if(han>=6){rank="跳満";pts=18000}
+  else if(han>=5){rank="満貫";pts=12000}
+  else if(han===4){rank="4翻";pts=11600}
+  else if(han===3){rank="3翻";pts=5800}
+  else if(han===2){rank="2翻";pts=2900}
+  else {rank="1翻";pts=1500}
+  return {rank:(han>=5?rank:`${rank}`), pts, han, ym:han>=13};
+}
+function fmt(n){return n.toLocaleString("ja-JP")}
+
+/* ================= 投稿フォーム ================= */
+const $ = id=>document.getElementById(id);
+
+function randomName(){
+  return PREFIX[Math.floor(Math.random()*PREFIX.length)] + SUFFIX[Math.floor(Math.random()*SUFFIX.length)];
+}
+$("penName").value = randomName();
+$("diceBtn").addEventListener("click", ()=>{ $("penName").value = randomName(); });
+
+/* 役チップ */
+const chipWrap = $("yakuChips");
+YAKU.forEach(y=>{
+  const b = document.createElement("button");
+  b.type="button";
+  b.className = "chip" + (y.yakuman?" yakuman":"") + (y.warn?" warn":"");
+  b.innerHTML = `${y.name} <small>${y.yakuman?"役満":y.han+"翻"}</small>`;
+  b.addEventListener("click", ()=>{
+    if(state.yaku.has(y.id)){ state.yaku.delete(y.id); b.classList.remove("on"); }
+    else{
+      state.yaku.add(y.id); b.classList.add("on");
+      if(y.warn) showToast("⚠ 緑一色は子に拒否されがちです");
+    }
+    updateBoard();
+  });
+  chipWrap.appendChild(b);
+});
+
+/* カウンター */
+document.querySelectorAll(".counter button").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const key = btn.dataset.c==="dora"?"dora":"aka";
+    state[key] = Math.max(0, Math.min(9, state[key]+Number(btn.dataset.d)));
+    $("doraNum").textContent = state.dora;
+    $("akaNum").textContent = state.aka;
+    updateBoard();
+  });
+});
+$("origYaku").addEventListener("input", updateBoard);
+$("kanshoku").addEventListener("change", updateBoard);
+
+/* 写真（クリック or ドラッグ＆ドロップ） */
+function loadPhoto(f){
+  if(!f || !f.type || !f.type.startsWith("image/")){ if(f) showToast("画像ファイルをドロップしてください"); return; }
+  const r = new FileReader();
+  r.onload = ev=>{
+    state.photo = ev.target.result;
+    $("photoDrop").innerHTML = `<img src="${state.photo}" alt="弁当写真"><p>タップ or ドロップで変更</p>`;
+  };
+  r.readAsDataURL(f);
+}
+$("photoDrop").addEventListener("click", ()=>$("photoInput").click());
+$("photoInput").addEventListener("change", e=>loadPhoto(e.target.files[0]));
+["dragover","dragenter"].forEach(ev=>$("photoDrop").addEventListener(ev, e=>{ e.preventDefault(); $("photoDrop").classList.add("drag"); }));
+["dragleave","dragend"].forEach(ev=>$("photoDrop").addEventListener(ev, ()=>$("photoDrop").classList.remove("drag")));
+$("photoDrop").addEventListener("drop", e=>{
+  e.preventDefault();
+  $("photoDrop").classList.remove("drag");
+  loadPhoto(e.dataTransfer.files[0]);
+});
+
+function selectedYakuNames(){
+  const names = YAKU.filter(y=>state.yaku.has(y.id)).map(y=>y.name);
+  if(state.dora>0) names.push(`ドラ${state.dora}`);
+  if(state.aka>0) names.push(`赤ドラ${state.aka}`);
+  const o = $("origYaku").value.trim();
+  if(o) names.push(`${o}（オリジナル）`);
+  return names;
+}
+
+function updateBoard(){
+  const names = selectedYakuNames();
+  const s = calcScore(state.yaku, state.dora, state.aka, $("origYaku").value.trim());
+  $("sbYaku").textContent = names.length ? names.join("・") : "役を選ぶと自動で採点されます";
+  const done = $("kanshoku").checked;
+  if(s.pts===0){ $("sbRank").textContent="—"; $("sbVal").textContent="0点"; return; }
+  $("sbRank").textContent = s.ym ? s.rank : `${s.han}翻・${s.rank.includes("翻")?"":s.rank}`.replace(/・$/,"");
+  $("sbVal").textContent = fmt(s.pts) + "点" + (done ? "" : "（見込み）");
+}
+
+/* 絵文字弁当（写真なしの場合） */
+const EMOJI_POOL = ["🍙","🍳","🥦","🍅","🌭","🍤","🥟","🍗","🥕","🍚"];
+function randomBento(){
+  const arr=[];
+  for(let i=0;i<6;i++) arr.push(EMOJI_POOL[Math.floor(Math.random()*EMOJI_POOL.length)]);
+  return arr;
+}
+
+/* 投稿 */
+$("submitBtn").addEventListener("click", ()=>{
+  const names = selectedYakuNames();
+  if(names.length===0){ showToast("役をひとつ選んでください🀄"); return; }
+  const s = calcScore(state.yaku, state.dora, state.aka, $("origYaku").value.trim());
+  const done = $("kanshoku").checked;
+  posts.unshift({
+    name: $("penName").value.trim() || randomName(),
+    avatar: AVATARS[Math.floor(Math.random()*AVATARS.length)],
+    time: "たった今",
+    photo: state.photo,
+    emoji: state.photo ? null : randomBento(),
+    yaku: names, yakumanScore: s,
+    status: done ? "tsumo" : "tenpai",
+    comment: $("comment").value.trim(),
+    reacts:{ron:0, uma:0, wakaru:0},
+    _score: s
+  });
+  renderFeed();
+  showToast(done ? "アガリ！🀄 " + fmt(s.pts) + "点！" : "リーチ！結果をお待ちください🀄");
+  /* reset light */
+  state = { yaku:new Set(), dora:0, aka:0, photo:null };
+  document.querySelectorAll(".chip.on").forEach(c=>c.classList.remove("on"));
+  $("doraNum").textContent="0"; $("akaNum").textContent="0";
+  $("origYaku").value=""; $("comment").value=""; $("kanshoku").checked=false;
+  $("photoDrop").innerHTML = `<div class="big">📷</div><p>タップして選ぶ／ここに写真をドラッグ＆ドロップ<br>（なければ絵文字弁当が自動で入ります）</p>`;
+  $("photoInput").value="";
+  updateBoard();
+  document.getElementById("feed-sec").scrollIntoView({behavior:"smooth"});
+});
+
+/* ================= フィード描画 ================= */
+const STATUS_LABEL = {tsumo:"アガリ！（完食）", ryukyoku:"流局（完食ならず）", tenpai:"テンパイ（開封待ち）"};
+
+function postScore(p){
+  if(p._score) return p._score;
+  if(p.yakuman>0) return {rank: p.yakuman>=2?"ダブル役満":"役満", pts:48000*p.yakuman, ym:true, han:13};
+  return calcScoreFromHan(p.han);
+}
+function calcScoreFromHan(han){
+  const dummy = calcScore(new Set(), han, 0, "");
+  return dummy;
+}
+
+function renderFeed(){
+  const feed = $("feed");
+  feed.innerHTML = "";
+  posts.forEach((p,i)=>{
+    const s = postScore(p);
+    const isRy = p.status==="ryukyoku";
+    const visual = p.photo
+      ? `<img class="bento-photo" src="${p.photo}" alt="弁当写真">`
+      : `<div class="bento">${p.emoji.map(e=>`<div class="cell">${e}</div>`).join("")}</div>`;
+    const badge = isRy
+      ? `<span class="score-badge ry">${s.rank}相当 … しかし流局</span>`
+      : `<span class="score-badge ${s.ym?"ym":""}">${s.ym?s.rank:s.han+"翻 "+(s.pts>=12000?s.rank:"")} ${fmt(s.pts)}点${p.status==="tenpai"?"（見込み）":""}</span>`;
+    const shareText = encodeURIComponent(`#弁当麻雀 ${p.yaku.join("・")}｜${isRy?"流局…":fmt(s.pts)+"点！"} ${p.comment||""}`);
+    const el = document.createElement("article");
+    el.className="post";
+    el.innerHTML = `
+      <div class="post-head">
+        <div class="avatar">${p.avatar}</div>
+        <div class="who"><b>${esc(p.name)}</b><span>${p.time}</span></div>
+        <span class="status ${p.status}">${STATUS_LABEL[p.status]}</span>
+      </div>
+      ${visual}
+      <div class="yakus">${p.yaku.map(y=>`<span class="ytag ${/役満|一色|国士/.test(y)?"ym":""}">${esc(y)}</span>`).join("")}</div>
+      <div>${badge}</div>
+      ${p.comment?`<div class="comment">${esc(p.comment)}</div>`:""}
+      <div class="reacts">
+        <button class="react" data-i="${i}" data-r="ron">🀄 ロン！<span class="cnt">${p.reacts.ron}</span></button>
+        <button class="react" data-i="${i}" data-r="uma">🤤 うまそう<span class="cnt">${p.reacts.uma}</span></button>
+        <button class="react" data-i="${i}" data-r="wakaru">🤝 わかる<span class="cnt">${p.reacts.wakaru}</span></button>
+        <a class="share-x" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${shareText}">Xでシェア →</a>
+      </div>`;
+    feed.appendChild(el);
+  });
+  feed.querySelectorAll(".react").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      if(b.classList.contains("done")) return;
+      const p = posts[Number(b.dataset.i)];
+      p.reacts[b.dataset.r]++;
+      b.querySelector(".cnt").textContent = p.reacts[b.dataset.r];
+      b.classList.add("done");
+    });
+  });
+}
+function esc(s){return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+/* ================= 役一覧 ================= */
+const ylist = $("yakuList");
+YAKU.forEach(y=>{
+  const d = document.createElement("div");
+  d.className = "ycard" + (y.yakuman?" ym":"");
+  d.innerHTML = `<h4>${y.name}<span class="han">${y.yakuman?"役満・48,000点":y.han+"翻"}</span></h4><p>${y.desc}</p>`;
+  ylist.appendChild(d);
+});
+DORA_DESC.forEach(y=>{
+  const d = document.createElement("div");
+  d.className = "ycard dora";
+  d.innerHTML = `<h4>${y.name}<span class="han">${y.han}</span></h4><p>${y.desc}</p>`;
+  ylist.appendChild(d);
+});
+
+/* ================= toast ================= */
+let toastTimer;
+function showToast(msg){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 2200);
+}
+
+updateBoard();
+renderFeed();
+</script>
+</body>
+</html>

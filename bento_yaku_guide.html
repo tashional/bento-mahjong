@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主な役ガイド — 弁当麻雀</title>
+<style>
+:root{
+  --felt:#2e6b4f; --felt-dark:#20503a;
+  --red:#d8503f; --red-dark:#b73c2d;
+  --yellow:#f2b705; --green:#4f8a5b; --brown:#8a5a2b;
+  --cream:#faf6ec; --paper:#fffdf7; --ink:#3a2f28; --ink-light:#7a6a5c;
+  --radius:18px; --shadow:0 4px 18px rgba(58,47,40,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Hiragino Maru Gothic ProN","Zen Maru Gothic","Rounded Mplus 1c","Yu Gothic UI","Meiryo",sans-serif;background:var(--cream);color:var(--ink);line-height:1.8}
+.wrap{max-width:680px;margin:0 auto;padding:0 16px}
+header{background:linear-gradient(160deg,var(--felt),var(--felt-dark));color:#fff;padding:38px 0 30px;text-align:center}
+header h1{font-size:30px;letter-spacing:.1em}
+header p{color:#ffe9a8;font-weight:700;margin-top:4px}
+header a.back{display:inline-block;margin-top:14px;color:#fff;border:2px solid rgba(255,255,255,.6);border-radius:999px;padding:7px 20px;text-decoration:none;font-weight:800;font-size:13px}
+section{padding:30px 0 6px}
+h2{font-size:21px;letter-spacing:.06em;border-left:6px solid var(--red);padding-left:12px;margin-bottom:14px}
+h2 small{font-size:12px;color:var(--ink-light);font-weight:600;margin-left:8px}
+.card{background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;margin-bottom:14px}
+.card h3{font-size:16.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h3 .emoji{font-size:22px}
+.han{font-size:12px;background:#eef4ec;color:#33604a;border-radius:999px;padding:3px 12px;font-weight:800;white-space:nowrap}
+.han.ym{background:#fbe9e6;color:#b73c2d}
+.han.rule{background:#fdf3d7;color:#8a6d1a}
+.card p{font-size:14px;color:#5a4c40;margin-top:6px}
+.card p b{color:var(--red-dark)}
+.warn{border:2px dashed #e6b8b0}
+.flow{display:flex;gap:10px;flex-wrap:wrap}
+.flow .step{flex:1;min-width:140px;background:var(--paper);border-radius:14px;box-shadow:var(--shadow);padding:14px;text-align:center;border-top:4px solid var(--yellow)}
+.flow .step:nth-child(2){border-top-color:var(--red)}
+.flow .step:nth-child(3){border-top-color:var(--green)}
+.flow .step .ico{font-size:26px}
+.flow .step b{display:block;font-size:14px}
+.flow .step span{font-size:12px;color:var(--ink-light)}
+table{width:100%;border-collapse:collapse;background:var(--paper);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);font-size:14px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid #efe6d4}
+th{background:var(--felt);color:#fff;font-size:13px;letter-spacing:.06em}
+tr:last-child td{border-bottom:none}
+td.pt{font-weight:900;color:var(--red-dark);white-space:nowrap}
+.example{background:#fff8e6;border:2px solid #f2dfa6;border-radius:var(--radius);padding:18px 20px;margin-bottom:14px}
+.example h3{font-size:15px;margin-bottom:6px}
+.example p{font-size:14px}
+footer{background:var(--felt-dark);color:#dceee3;padding:30px 0;text-align:center;margin-top:34px;font-size:13px}
+footer a{color:#ffe9a8;font-weight:800;text-decoration:none}
+.note{font-size:12.5px;color:var(--ink-light);margin:10px 2px 20px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>🀄 主な役ガイド 🍱</h1>
+    <p>#弁当麻雀 公式（自称）ルールブック</p>
+    <a class="back" href="bento_mahjong_lp.html">← トップに戻る</a>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>基本の流れ</h2>
+    <div class="flow">
+      <div class="step"><div class="ico">🥢</div><b>配牌</b><span>冷蔵庫を開けて食材をツモる。冷蔵庫が山。</span></div>
+      <div class="step"><div class="ico">🍚</div><b>リーチ</b><span>ご飯を詰めた瞬間に成立。あとおかず一種でアガれる。</span></div>
+      <div class="step"><div class="ico">🍱</div><b>アガリ</b><span>子供が全部食べて、空の弁当箱が帰ってきたら「アガリ」。</span></div>
+    </div>
+    <p class="note">※おかずが残っていたら<b>流局</b>。帰宅後に弁当箱を開ける瞬間の緊張感こそが、弁当麻雀の醍醐味です。<br>※弁当麻雀では、我々は<b>常に親</b>です。</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>一翻役<small>まずはここから</small></h2>
+
+    <div class="card">
+      <h3><span class="emoji">🍚</span>リーチ<span class="han">1翻</span></h3>
+      <p>ご飯を詰めた瞬間に成立。「あとおかず一種を詰めるだけ」の状態は、リーチと呼ぶほかない。全員がまずここから始まる。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="emoji">🀄</span>ツモ<span class="han">1翻</span></h3>
+      <p>門前清自摸和。<b>冷凍食品を使わずに</b>作った弁当でアガると1翻。ただし、冷凍食品を使うことはまったく問題ない——ツモがつかないだけで、タンヤオも三色もちゃんと複合する。昨今の冷食のクオリティは異常に高い。冷凍食品を忌避するのは「丁寧な暮らし」時代の呪いである。時短派の主流に乗って、大いに使うべし。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="emoji">🍙</span>ピンフ（日の丸・のり弁）<span class="han">1翻</span></h3>
+      <p>白いご飯の真ん中に梅干しをひとつ。シンプルにして美しい、文句なしの基本形。<b>のり弁でもピンフはつく。</b></p>
+    </div>
+
+    <div class="card">
+      <h3><span class="emoji">😋</span>タンヤオ（苦手ゼロ）<span class="han">1翻</span></h3>
+      <p>子供の嫌いなおかずがひとつもない弁当。一九字牌がないのと同じで、全部好きなもので埋め尽くされた状態。<b>鳴きタンOK</b>——冷凍食品を入れてもタンヤオは成立する。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="emoji">🍤</span>ドラ（子の大好物）<span class="han">1翻／個</span></h3>
+      <p>子どもの大好物は1個につき1翻。冷凍エビシューマイを3個並べれば、それだけでドラ3。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="emoji">🍅</span>赤ドラ<span class="han">1翻／個</span></h3>
+      <p>赤ウィンナー、ミニトマト。見た目に赤いものは1個につき1翻追加。彩りと打点を同時に稼ぐ、弁当麻雀の華。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>二翻以上<small>役作りの本番</small></h2>
+
+    <div class="card">
+      <h3><span class="emoji">🍅🥦🍳</span>三色（サンショク）<span class="han">2翻</span></h3>
+      <p>弁当は赤・緑・黄の三色が揃っていることが大事——これはそのまま三色同順に対応する。ミニトマト、ブロッコリー、卵焼き。それだけで成立する、弁当麻雀の花形。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="emoji">🍗</span>混一色（ホンイツ）<span class="han">3翻</span></h3>
+      <p>ほぼ一色に寄せた手。育ち盛りの子供には、三色から離れた茶色寄せが案外人気である。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="emoji">🍜</span>清一色（チンイツ）<span class="han">6翻</span></h3>
+      <p>完全一色。ここまで来ると役満が見えてくる。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>役満<small>48,000点</small></h2>
+
+    <div class="card">
+      <h3><span class="emoji">🍗🍜🥟</span>茶一色（チャーイーソー）<span class="han ym">役満</span></h3>
+      <p>唐揚げ、焼きそば、チキンナゲット、チャーハン。<b>茶色は裏切らない。</b>上がりやすく、しかも異常に盛り上がる。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="emoji">🍝</span>赤一色（ホンイーソー）<span class="han ym">役満</span></h3>
+      <p>ナポリタンを軸に、赤ウィンナー、ミニトマトで染める情熱の役満。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="emoji">🍗🥚🌭</span>国士無双<span class="han ym">役満</span></h3>
+      <p>唐揚げ、ゆで卵、ウィンナー——十三種の孤独な牌を揃えるように、子供の大好物だけで構成された弁当。開けた瞬間の「全部好きなやつ！」がロンの合図。</p>
+    </div>
+
+    <div class="card warn">
+      <h3><span class="emoji">🥦🥬🥒</span>緑一色（リューイーソー）<span class="han ym">役満 ⚠非推奨</span></h3>
+      <p>ブロッコリーとアスパラで表面を敷き詰めた結果、子供に本気で嫌がられた実績あり。役としては存在するが、実用的ではない。<b>流局リスク極大。</b>挑戦は自己責任で。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>点数早見表<small>我々は常に親</small></h2>
+    <table>
+      <tr><th>翻数</th><th>名称</th><th>点数</th></tr>
+      <tr><td>1翻</td><td>—</td><td class="pt">1,500点</td></tr>
+      <tr><td>2翻</td><td>—</td><td class="pt">2,900点</td></tr>
+      <tr><td>3翻</td><td>—</td><td class="pt">5,800点</td></tr>
+      <tr><td>4翻</td><td>—</td><td class="pt">11,600点</td></tr>
+      <tr><td>5翻</td><td>満貫</td><td class="pt">12,000点</td></tr>
+      <tr><td>6〜7翻</td><td>跳満</td><td class="pt">18,000点</td></tr>
+      <tr><td>8〜10翻</td><td>倍満</td><td class="pt">24,000点</td></tr>
+      <tr><td>11〜12翻</td><td>三倍満</td><td class="pt">36,000点</td></tr>
+      <tr><td>13翻〜／役満</td><td>役満</td><td class="pt">48,000点</td></tr>
+    </table>
+    <p class="note">弁当麻雀は極めてインフレしやすい構造にあり、普通に作っているだけでどんどん点数が上がっていきます。</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>複合の例</h2>
+    <div class="example">
+      <h3>🍳 オーソドックス弁当が、あっさり跳満</h3>
+      <p>卵焼き・野菜炒め・ミニトマト・ブロッコリーの定番構成でも——<b>リーチ・ピンフ・タンヤオ・三色・ドラ・赤ドラ</b>が複合して、あっさり跳満（18,000点）。</p>
+    </div>
+    <div class="example">
+      <h3>🍚 メンタンピン三色</h3>
+      <p>塩サバのり弁なら——のり弁で<b>ピンフ</b>、嫌いなものゼロで<b>タンヤオ</b>、冷食不使用で<b>ツモ</b>、サバの茶・小松菜の緑・トマトの赤で<b>三色</b>。リーチと合わせて6翻、跳満です。</p>
+    </div>
+    <div class="example">
+      <h3>🍗 混一色ドラ3赤ドラ4</h3>
+      <p>茶色に寄せて大好物を並べれば、混一色・ドラ3・赤ドラ4＝<b>倍満（24,000点）</b>。しかも我々は常に親である。</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>多様なアガり形が共存できる社会へ。今日の一局を <b>#弁当麻雀</b> で。</p>
+    <p style="margin-top:8px"><a href="bento_mahjong_lp.html">← トップページに戻って投稿する</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
